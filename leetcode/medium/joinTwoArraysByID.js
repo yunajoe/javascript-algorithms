@@ -79,3 +79,30 @@ var join2 = function (arr1, arr2) {
   });
   return Object.values(obj);
 };
+
+const join3 = function (arr1, arr2) {
+  const map = arr1.reduce((acc, item) => {
+    acc.set(item.id, item);
+    return acc;
+  }, new Map());
+
+  arr2.forEach((item) => {
+    const existingItem = map.get(item.id) || {};
+    map.set(item.id, { ...existingItem, ...item });
+  });
+
+  return Array.from(map.values()).sort((a, b) => (a.id < b.id ? -1 : 1));
+};
+
+const join4 = function (arr1, arr2) {
+  const result = {};
+  arr1.forEach((e) => (result[e.id] = e));
+  arr2.forEach((e) => {
+    if (result[e.id]) {
+      Object.assign(result[e.id], e);
+    } else {
+      result[e.id] = e;
+    }
+  });
+  return Object.values(result).sort((a, b) => a.id - b.id);
+};
