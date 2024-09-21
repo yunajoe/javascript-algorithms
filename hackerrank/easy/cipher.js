@@ -9,7 +9,7 @@ function caesarCipher(s, k) {
     let lowerStr = str.toLowerCase();
     let currentIndex = alphabet.indexOf(lowerStr);
     if (currentIndex !== -1) {
-      let move = currentIndex + k;
+      let move = (k % 26) + currentIndex;
       if (move > 25) {
         let newIndex = move - 26;
         if (isUpperCase) {
