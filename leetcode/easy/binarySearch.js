@@ -15,12 +15,10 @@ const binarySearch = (arr, targetNumber) => {
     }
   }
 
-  //   왼쪽 인덱수
   if (arr[leftIndex] === targetNumber) {
     return leftIndex;
   }
 
-  //   오른쪽 인덱수
   if (arr[rightIndex] === targetNumber) {
     return rightIndex;
   }
