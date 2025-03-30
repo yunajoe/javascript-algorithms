@@ -18,9 +18,12 @@ var isHappy = function (n) {
   while (fastPointer !== 1 && slowPointer !== fastPointer) {
     slowPointer = sumOfSquredDigits(slowPointer);
     fastPointer = sumOfSquredDigits(sumOfSquredDigits(fastPointer));
-    if (fastPointer == 1) {
-      return true;
-    }
+    // if (fastPointer == 1) {
+    //   return true;
+    // }
+  }
+  if (fastPointer == 1) {
+    return true;
   }
   return false;
 };
