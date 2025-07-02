@@ -23,21 +23,3 @@ var tribonacci = function (n) {
 
   return arr[n];
 };
-
-// topDown 방식(time exceeded 로 실패)
-const topDown = (n, arr) => {
-  if (n === 0) {
-    arr[0] = 0;
-  }
-  if (n === 1) {
-    arr[1] = 1;
-  }
-  if (n === 2) {
-    arr[2] = 1;
-  }
-  if (n > 2) {
-    arr[n] = topDown(n - 1, arr) + topDown(n - 2, arr) + topDown(n - 3, arr);
-  }
-
-  return arr[n];
-};
