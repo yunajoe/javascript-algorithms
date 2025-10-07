@@ -67,7 +67,6 @@ export function composeTransform(f, g) {
  *  if the arguments are the same on subsequent calls, or compute a new result if they are different.
  */
 
-// function은 오로지 하나만 받는건가?
 export function memoizeTransform(f) {
   // params은 function 을받고, 그 function은 2개의 argument를 받는다.
   // return function은 은 x, y를 받고
