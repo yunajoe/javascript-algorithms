@@ -53,26 +53,16 @@ class Video {
   skipOpening() {
     if (this.op_start <= this.pos && this.pos <= this.op_end) {
       this.setPos = this.op_end;
-    } else {
-      this.setPos = this.pos;
     }
   }
   // 이전 버튼을 누른 후 실행되는 펑션
   prevFunc() {
-    if (this.pos <= 10) {
-      this.setPos = 0;
-    } else {
-      this.setPos = this.pos - 10;
-    }
+    this.setPos = Math.max(0, this.pos - 10);
   }
 
   // 다음 버튼을 누른 후 실행되는 펑션
   nextFunc() {
-    if (this.video_len - this.pos <= 10) {
-      this.setPos = this.video_len;
-    } else {
-      this.setPos = this.pos + 10;
-    }
+    this.setPos = Math.min(this.video_len, this.pos + 10);
   }
 }
 
