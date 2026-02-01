@@ -1,47 +1,44 @@
-const timeAMObj = {
-  "01": "01",
-  "02": "02",
-  "03": "03",
-  "04": "04",
-  "05": "05",
-  "06": "06",
-  "07": "07",
-  "08": "08",
-  "09": "09",
-  10: "10",
-  11: "11",
-  12: "00",
+const parseTimeData = (time) => {
+  const regex = /PM|AM/gi;
+  const [h, m, s] = time.replaceAll(regex, "").split(":").map(Number(item));
+  return {
+    h,
+    m,
+    s,
+  };
 };
-const timePMObj = {
-  "01": "13",
-  "02": "14",
-  "03": "15",
-  "04": "16",
-  "05": "17",
-  "06": "18",
-  "07": "19",
-  "08": "20",
-  "09": "21",
-  10: "22",
-  11: "23",
-  12: "24",
+
+const pad = (s) => {
+  return String(s).padStart(2, "0");
+};
+
+const parsePadding = (h, m, s) => {
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+};
+
+const parsePMDate = (time) => {
+  const { h, m, s } = parseTimeData(time);
+  if (h < 1 || h > 12) throw new Error("[ERROR]");
+  if (h <= 11) {
+    return parsePadding(h + 12, m, s);
+  }
+  return parsePadding(h, m, s);
+};
+
+const parseAMDate = (time) => {
+  const { h, m, s } = parseTimeData(time);
+  if (h < 1 || h > 12) throw new Error("[ERROR]");
+  if (h <= 11) {
+    return parsePadding(h, m, s);
+  }
+  return parsePadding(0, m, s);
 };
 
 function timeConversion(s) {
-  // Write your code here
-
-  const isAm = s.includes("AM");
-  if (isAm) {
-    const replaceS = s.replace("AM", "");
-    const arr = replaceS.split(":");
-    const [hh, mm, ss] = [arr[0], arr[1], arr[2]];
-    return `${timeAMObj[hh]}:${mm}:${ss}`;
+  if (s.includes("PM")) {
+    return parsePMDate(s);
   }
-  // pm
-  if (!isAm) {
-    const replaceS = s.replace("PM", "");
-    const arr = replaceS.split(":");
-    const [hh, mm, ss] = [arr[0], arr[1], arr[2]];
-    return `${timePMObj[hh]}:${mm}:${ss}`;
+  if (s.includes("AM")) {
+    return parseAMDate(s);
   }
 }
