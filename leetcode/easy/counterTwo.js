@@ -1,22 +1,29 @@
 /**
  * @param {integer} init
- * @return  { increment: Function, decrement: Function, reset: Function }
+ * @return { increment: Function, decrement: Function, reset: Function }
  */
+var createCounter = function (init) {
+  let copyInit = init;
 
-const createCounter = function (init) {
-  let object = new Object();
-  let initCopy = init;
-
-  object.increment = function () {
-    return ++init;
+  return {
+    increment: () => {
+      copyInit++;
+      return copyInit;
+    },
+    decrement: () => {
+      copyInit--;
+      return copyInit;
+    },
+    reset: () => {
+      copyInit = init;
+      return copyInit;
+    },
   };
-  object.decrement = function () {
-    return --init;
-  };
-
-  object.reset = function () {
-    init = initCopy;
-    return init;
-  };
-  return object;
 };
+
+/**
+ * const counter = createCounter(5)
+ * counter.increment(); // 6
+ * counter.reset(); // 5
+ * counter.decrement(); // 4
+ */
