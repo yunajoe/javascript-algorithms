@@ -1,19 +1,11 @@
 /**
- *
- * @param {number}n
- * @returns {Function}
+ * @param {number} n
+ * @return {Function} counter
  */
-
-const createCounter = function (n) {
-  let isFirstTime = false;
+var createCounter = function (n) {
   let num = n;
   return function () {
-    if (!isFirstTime) {
-      isFirstTime = true;
-      return num;
-    }
-    num = num + 1;
-    return num;
+    return num++;
   };
 };
 
