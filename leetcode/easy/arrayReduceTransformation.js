@@ -4,13 +4,10 @@
  * @param {number} init
  * @return {number}
  */
-
-const reduce = function (nums, fn, init) {
-  if (nums.length === 0) return init;
+var reduce = function (nums, fn, init) {
   let acc = init;
-  nums.forEach((num) => {
-    acc = fn(acc, num);
-  });
-
+  for (let i = 0; i < nums.length; i++) {
+    acc = fn(acc, nums[i]);
+  }
   return acc;
 };
