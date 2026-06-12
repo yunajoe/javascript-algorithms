@@ -16,5 +16,5 @@ class NextLevel {
 const level1 = new NextLevel();
 console.log(`user ${level1.user_id} lv ${level1.levelStr}`);
 
-const level2 = new NextLevel("hello", 28);
+const level2 = new NextLevel(user_id, level);
 console.log(`user ${level2.user_id} lv ${level2.levelStr}`);
