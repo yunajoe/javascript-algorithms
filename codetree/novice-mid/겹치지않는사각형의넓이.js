@@ -11,7 +11,7 @@ const SIZE = OFFSET * 2 + 1;
 const grid = Array.from({ length: SIZE }, () => new Array(SIZE).fill(false));
 
 const fillRect = ([x1, y1, x2, y2], value) => {
-  for (let x = x1 + OFFSET; x < x2 + OFFSET; i++) {
+  for (let x = x1 + OFFSET; x < x2 + OFFSET; x++) {
     for (let y = y1 + OFFSET; y < y2 + OFFSET; y++) {
       grid[x][y] = value;
     }
@@ -26,10 +26,9 @@ fillRect(rectB, true);
 fillRect(rectM, false);
 
 let area = 0;
-for (let x = 0; i < SIZE; i++) {
+for (let x = 0; x < SIZE; x++) {
   for (let y = 0; y < SIZE; y++) {
     if (grid[x][y]) area++;
   }
 }
-
 console.log(area);
