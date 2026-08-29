@@ -69,3 +69,86 @@ node1.next = null
 - **탐색:** `Head`부터 `Tail`까지 일일이 확인해야 하므로 $O(N)$이 소요됩니다.
 - **삽입 및 삭제:** 인접한 곳의 선을 끊고 재연결하는 작업만 해주면 되므로 $O(1)$이 소요됩니다.
 - **유의사항:** 일방향으로만 진행되기 때문에 **뒤로 돌아갈 수 없는 구조**입니다.
+
+## 단일 연결 리스트 - 삽입/삭제/탐색
+
+단일 연결 리스트는 삽입과 삭제 연산에 최적화된 자료구조입니다.
+
+---
+
+### 1. 삽입 (Insertion)
+
+### 1-1. 맨 뒤에 추가 (`insert_end`)
+
+기존 `tail` 노드 뒤에 새로운 노드를 연결하고, `tail` 포인터를 새 노드로 업데이트합니다.
+
+- **동작 순서:**
+
+1. 새 노드를 생성합니다.
+2. 기존 `tail`의 `next`를 새 노드로 지정합니다.
+3. `tail` 포인터를 새 노드로 변경합니다.
+
+```python
+function SLL.insert_end(num)
+    set new_node = node(num)     # Step 1. 노드 만들기
+    SLL.tail.next = new_node     # Step 2. 이어 붙이기
+    SLL.tail = new_node          # Step 3. Tail 변경하기
+
+```
+
+---
+
+### 1-2. 맨 앞에 추가 (`insert_front`)
+
+기존 `head` 노드 앞에 새로운 노드를 연결하고, `head` 포인터를 새 노드로 업데이트합니다.
+
+- **동작 순서:**
+
+1. 새 노드를 생성합니다.
+2. 새 노드의 `next`를 기존 `head`로 지정합니다.
+3. `head` 포인터를 새 노드로 변경합니다.
+
+```python
+function SLL.insert_front(num)
+    set new_node = node(num)     # Step 1. 노드 만들기
+    new_node.next = SLL.head     # Step 2. 이어 붙이기
+    SLL.head = new_node          # Step 3. Head 변경하기
+
+```
+
+---
+
+### 1-3. Head 바로 뒤에 추가 (`insert_after_head`)
+
+`head` 노드와 그다음 노드 사이에 새 노드를 끼워 넣습니다.
+
+- **동작 순서:**
+
+1. 새 노드를 생성합니다.
+2. 새 노드의 `next`를 기존 `head.next`로 지정합니다.
+3. `head`의 `next`를 새 노드로 변경합니다.
+
+```python
+function SLL.insert_after_head(num)
+    set new_node = node(num)          # Step 1. 노드 만들기
+    new_node.next = SLL.head.next     # Step 2. 새로운 노드의 next 값 변경
+    SLL.head.next = new_node          # Step 3. Head의 next 값 변경
+
+```
+
+---
+
+## 2. 삭제 (Deletion)
+
+삭제 연산 시 유의할 점은 **삭제하려는 노드의 이전 노드가 가리키는 연결 관계를 변경**해야 한다는 점입니다.
+
+- **Tail 삭제:** `tail` 바로 전 노드의 `next`를 `null`로 바꾼 뒤, `tail` 포인터를 그 전 노드로 옮깁니다.
+- **Head 삭제:** `head` 포인터를 `head.next`로 변경합니다. 실제 메모리상의 노드를 바로 지우지 않더라도, 참조하는 시작점인 `head`를 다음 노드로 변경하면 기존 `head` 노드는 자연스럽게 삭제된 것과 같은 효과를 냅니다.
+
+---
+
+## 3. 탐색 (Search)
+
+삽입과 삭제 시 `head`와 `tail` 포인터를 정확히 유지해 주는 이유는 **탐색을 원활하게 수행하기 위함**입니다.
+
+- **탐색 방식:** 시작점인 `head`부터 출발하여 `tail`이 나올 때까지 계속해서 `next` 포인터를 따라 이동하며 노드의 데이터 값을 확인합니다.
