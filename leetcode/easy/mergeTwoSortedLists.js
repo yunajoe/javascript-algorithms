@@ -18,19 +18,20 @@ var mergeTwoLists = function (list1, list2) {
   let node2 = list2;
 
   while (node1 !== null || node2 !== null) {
-    // node1의 값을 붙일경우
-    if (node2 == null || (node1 !== null && node1.val <= node2.val)) {
-      let addedValue = node1.val;
-      current.next = new ListNode(addedValue);
-      current = current.next;
+    let addedValue;
+
+    // 1를 붙일 경우
+    if (node2 === null || (node1 !== null && node1.val <= node2.val)) {
+      addedValue = node1.value;
       node1 = node1.next;
     } else {
-      // node2의 값을 붙일 경우
-      let addedValue = node2.val;
-      current.next = new ListNode(addedValue);
-      current = current.next;
+      // 2를 붙일 경우
+      addedValue = node2.val;
       node2 = node2.next;
     }
+
+    current.next = new ListNode(addedValue);
+    current = current.next;
   }
 
   return head.next;
