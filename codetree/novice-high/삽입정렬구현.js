@@ -23,7 +23,6 @@ for (let i = 1; i < arr.length; i++) {
 console.log(arr.join(" "));
 
 // while문
-
 for (let i = 1; i < arr.length; i++) {
   const key = arr[i]; // 1
   let compareIndex = i - 1;
