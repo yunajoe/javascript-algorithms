@@ -1,3 +1,7 @@
+/**
+ * 자열을 왼쪽에서 오른쪽으로 순서대로 읽으면서, )를 만났을 때 반드시 직전에 대기 중이던 (가 스택에 있어야 한다"**는 **시간적 순서(Sequence)**를 강제하는 용도로 스택을 사용하고 있는 것
+ *
+ */
 const fs = require("fs");
 const bracketStr = fs.readFileSync(0, "utf-8").trim();
 
