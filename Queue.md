@@ -102,12 +102,188 @@ console.log(queue[front]); // 2
 - 큐에 노드를 추가하고 앞에서부터 꺼내 탐색
 - 가중치가 없는 그래프에서 최단 거리 탐색 등에 활용
 
-## 6. 핵심 요약
+## 6. 큐(Queue)의 주요 5가지 연산
 
-> **큐는 FIFO(선입선출) 자료구조이다.**
+큐를 이용할 때 주로 사용되는 기본 연산은 다음과 같습니다.
 
-- `push()` : 뒤에 추가
-- `pop()` : 앞에서 제거
-- 배열의 `shift()`는 나머지 요소들의 인덱스를 재정렬해야 하므로 O(n)이 걸릴 수 있음
-- 큐 연산이 많다면 `front` 인덱스, 원형 큐, 연결 리스트 등을 이용해 효율적으로 구현할 수 있음
-- BFS에서 자주 사용됨
+- **`push(E)`**: 큐의 맨 뒤에 데이터 E를 추가합니다.
+
+- **`size()`**: 현재 큐에 들어있는 데이터의 수를 반환합니다.
+
+- **`empty()`**: 큐가 비어있으면 `true`, 아니면 `false`를 반환합니다.
+
+- **`front()`**: 큐의 맨 앞에 있는 데이터를 제거하지 않고 반환합니다.
+
+- **`pop()`**: 큐의 맨 앞에 있는 데이터를 반환하고 동시에 큐에서 제거합니다.
+
+## 7. 큐의 구현 방식과 발전 과정
+
+### 기본 배열을 이용한 큐 (비효율성 문제)
+
+- `pop()` 구현 시 배열의 맨 앞 원소를 제거하기 위해 `shift()` 함수를 사용합니다.
+
+- 하지만 `shift()` 함수는 뒤의 모든 원소를 한 칸씩 당겨와야 하므로 **$O(n)$의 시간복잡도**를 가집니다.
+
+- 타 언어의 큐(`pop`이 $O(1)$로 동작)와 비교했을 때 성능상 비효율적입니다.
+
+```javascript
+class Queue {
+  constructor() {
+    // 빈 큐 하나를 생성합니다.
+    this.q = [];
+  }
+
+  push(item) {
+    // 큐의 맨 뒤에 데이터를 추가합니다.
+    this.q.push(item);
+  }
+
+  empty() {
+    // 큐가 비어있으면 true를 반환합니다.
+    return this.q.length === 0;
+  }
+
+  size() {
+    // 큐에 들어있는 데이터 수를 반환합니다.
+    return this.q.length;
+  }
+
+  pop() {
+    // 큐의 맨 앞에 있는 데이터를 반환하고 제거합니다.
+    if (this.empty()) {
+      throw new Error("Queue is empty");
+    }
+    return this.q.shift();
+  }
+
+  front() {
+    // 큐의 맨 앞에 있는 데이터를 제거하지 않고 반환합니다.
+    if (this.empty()) {
+      throw new Error("Queue is empty");
+    }
+    return this.q[0];
+  }
+}
+
+const q = new Queue(); // 정수를 관리할 queue를 선언합니다. => 빈 큐
+q.push(3);
+q.push(5);
+q.push(9);
+
+console.log(q.front()); // 가장 앞에 있는 원소를 출력합니다. => 3
+q.pop(); // 가장 앞에 있는 원소를 제거합니다.
+console.log(q.size()); // 원소의 개수를 출력합니다 => 2
+while (!q.empty()) {
+  // 가장 앞에 있는 원소부터 순서대로 출력합니다.
+  console.log(q.front()); // 순서대로 5 9 출력됩니다.
+  q.pop(); // 가장 앞에 있는 원소를 제거합니다.
+}
+```
+
+### 선형 큐 (Linear Queue)
+
+- 배열을 그대로 쓰되, `head`와 `tail` 포인터를 두어 맨 앞 원소를 직접 당겨오는 대신 포인터를 이동시키는 방식을 사용합니다.
+
+- 이를 통해 `pop()` 연산을 **$O(1)$의 시간복잡도**로 개선할 수 있습니다.
+
+- **한계**: 실제 배열에서 값이 삭제되는 것이 아니기 때문에 `head` 이전에 위치한 공간은 사용되지 않고 버려져 **메모리를 많이 차지한다**는 단점이 있습니다.
+
+```javascript
+class Queue {
+  constructor() {
+    // 빈 큐 하나를 생성합니다.
+    this.q = [];
+    this.head = -1; // head는 큐의 가장 첫 원소의 위치 바로 앞을 가리킵니다.
+    this.tail = -1; // tail은 큐의 가장 마지막 원소의 위치를 가리킵니다.
+  }
+
+  push(item) {
+    // 큐의 맨 뒤에 데이터를 추가합니다.
+    this.q.push(item);
+    this.tail++;
+  }
+
+  empty() {
+    // 큐가 비어있으면 true를 반환합니다.
+    return this.head === this.tail;
+  }
+
+  size() {
+    // 큐에 들어있는 데이터 수를 반환합니다.
+    return this.tail - this.head;
+  }
+
+  pop() {
+    // 큐의 맨 앞에 있는 데이터를 반환하고 제거합니다.
+    if (this.empty()) {
+      throw new Error("Queue is empty");
+    }
+    return this.q[++this.head];
+  }
+
+  front() {
+    // 큐의 맨 앞에 있는 데이터를 제거하지 않고 반환합니다.
+    if (this.empty()) {
+      throw new Error("Queue is empty");
+    }
+    return this.q[this.head + 1];
+  }
+}
+```
+
+### 원형 큐 (Circular Queue) 개념 도입
+
+- 선형 큐의 메모리 낭비 문제를 해결하기 위해 배열의 시작과 끝을 이어 붙인 원형 구조를 활용합니다.
+
+- 최대 크기(`MAX_SIZE`)를 제한하고 나머지 연산(`% MAX_SIZE`)을 사용하여, 더 이상 사용하지 않는 앞쪽 공간을 재사용할 수 있도록 개선합니다.
+
+```javascript
+const MAX_SIZE = 10000;
+
+class Queue {
+  constructor() {
+    // 빈 큐 하나를 생성합니다.
+    this.q = Array(MAX_SIZE).fill(0);
+    this.head = 0;
+    this.tail = 0;
+  }
+
+  push(item) {
+    // 큐의 맨 뒤에 데이터를 추가합니다.
+    if (this.full()) throw new Error("Queue is full");
+
+    this.tail = (this.tail + 1) % MAX_SIZE;
+    this.q[this.tail] = item;
+  }
+
+  full() {
+    // 큐가 가득 차 있으면 true를 반환합니다.
+    return (this.tail + 1) % MAX_SIZE === this.head;
+  }
+
+  empty() {
+    // 큐가 비어있으면 true를 반환합니다.
+    return this.head === this.tail;
+  }
+
+  size() {
+    // 큐에 들어있는 데이터 수를 반환합니다.
+    return (this.tail - this.head + MAX_SIZE) % MAX_SIZE;
+  }
+
+  pop() {
+    // 큐의 맨 앞에 있는 데이터를 반환하고 제거합니다.
+    if (this.empty()) throw new Error("Queue is empty");
+
+    this.head = (this.head + 1) % MAX_SIZE;
+    return this.q[this.head];
+  }
+
+  front() {
+    // 큐의 맨 앞에 있는 데이터를 제거하지 않고 반환합니다.
+    if (this.empty()) throw new Error("Queue is empty");
+
+    return this.q[(this.head + 1) % MAX_SIZE];
+  }
+}
+```
