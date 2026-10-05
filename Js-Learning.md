@@ -209,3 +209,111 @@ console.log(date.toString()); // Sat Mar 01 2025 ...
 
 - 크기 비교(`>`, `<`, `>=`, `<=`)는 내부적으로 `getTime()`으로 변환되어 비교되므로 그대로 사용할 수 있습니다.
 - 단, 동등 비교(`==`, `===`)는 참조값이 다르기 때문에 정상적으로 동작하지 않으므로, **`.getTime()` 값을 비교**해야 합니다.
+
+# Javascript type checking
+
+## 자바스크립트 타입 및 프로퍼티 확인 방법
+
+### 1. `typeof` 연산자 (원시 타입 및 기본 타입 확인)
+
+- **역할**: 피연산자의 타입을 **문자열**로 반환합니다.
+- **반환 값 종류**: `"undefined"`, `"boolean"`, `"number"`, `"string"`, `"function"`, `"object"` 등
+- **주의사항**: 역사적인 이유로 `typeof null`은 `"object"`를 반환하며, 배열과 일반 객체 모두 `"object"`로 반환됩니다.
+
+```javascript
+typeof undefined; // => "undefined"
+typeof true; // => "boolean"
+typeof 42; // => "number"
+typeof "Hello"; // => "string"
+typeof function () {}; // => "function"
+typeof [1, 2, 3]; // => "object" (배열도 object로 반환)
+typeof null; // => "object" (주의!)
+```
+
+---
+
+### 2. `instanceof` 연산자 (객체 인스턴스 관계 확인)
+
+- **역할**: 객체가 특정 클래스(생성자)의 인스턴스인지 프로토타입 체인을 통해 확인합니다 (`true`/`false` 반환).
+- **특징**: 객체에만 사용 가능하며, 자식 클래스는 부모 클래스 검사 시에도 `true`를 반환합니다.
+
+```javascript
+class Beverage {}
+class Coffee extends Beverage {}
+
+const java = new Coffee();
+
+java instanceof Coffee; // => true (Coffee의 인스턴스)
+java instanceof Beverage; // => true (부모 클래스인 Beverage의 인스턴스이기도 함)
+```
+
+---
+
+### 3. `Array.isArray()` (안전한 배열 확인)
+
+- **역할**: 값이 배열인지 여부를 정확히 판별합니다.
+- **필요성**: `instanceof Array`는 iframe(다른 렐름) 환경이나 프로토타입이 조작된 객체에서 오작동할 수 있지만, `Array.isArray()`는 이를 안전하게 무시하므로 **배열 검사 시 항상 권장**됩니다.
+
+```javascript
+// 잘못된 판단을 하는 경우 (instanceof)
+({ __proto__: Array.prototype }) instanceof Array; // => true (가짜 배열임에도 참 반환)
+
+// 올바르게 판단하는 경우 (Array.isArray)
+Array.isArray({ __proto__: Array.prototype }); // => false (정확히 배열이 아님을 감지)
+Array.isArray([1, 2, 3]); // => true
+```
+
+---
+
+### 4. `in` 연산자 (프로퍼티 존재 여부 확인)
+
+- **역할**: 객체 안에 해당 프로퍼티가 존재하는지 확인합니다 (`true`/`false` 반환).
+- **특징**: 값이 `undefined`로 설정된 프로퍼티도 감지하며, 객체 고유의 프로퍼티뿐만 아니라 **상속받은 프로퍼티나 메서드**까지 모두 `true`로 판단합니다.
+
+```javascript
+class Coffee {
+  constructor() {
+    this.temperature = "hot";
+    this.isDarkMatter = undefined; // 값이 undefined인 프로퍼티
+  }
+  coolDown() {
+    this.temperature = "warm";
+  }
+}
+
+const espresso = new Coffee();
+
+"temperature" in espresso; // => true (존재함)
+"isDarkMatter" in espresso; // => true (값이 undefined여도 존재함)
+"color" in espresso; // => false (존재하지 않음)
+"coolDown" in espresso; // => true (상속/메서드도 포함)
+```
+
+---
+
+### 5. `Object.hasOwn()` (고유 프로퍼티 소유 여부 확인)
+
+- **역할**: 상속받거나 부모로부터 온 것이 아닌, 객체 자신이 **직접 소유한 고유 프로퍼티**인지 확인합니다.
+- **특징**: `in` 연산자와 달리 상속된 프로퍼티나 메서드는 `false`를 반환하므로, 객체 내부의 실제 데이터 속성만 정확히 확인하고 싶을 때 유용합니다.
+
+```javascript
+class Coffee {
+  constructor() {
+    this.temperature = "hot";
+  }
+  coolDown() {
+    this.temperature = "warm";
+  }
+}
+
+const cappuccino = new Coffee();
+
+Object.hasOwn(cappuccino, "temperature"); // => true (직접 소유한 속성)
+Object.hasOwn(cappuccino, "coolDown"); // => false (메서드/상속된 것이라 아님)
+Object.hasOwn(cappuccino, "constructor"); // => false (프로토타입 상속 속성)
+```
+
+---
+
+> **💡 요약 노트**
+> 자바스크립트의 타입 검사는 유연하지만 예기치 않은 오류를 유발할 수 있습니다. 더 엄격하고 안전한 코드를 원하신다면 정적 타입 언어인 **TypeScript** 도입을 권장합니다!
