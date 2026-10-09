@@ -212,9 +212,7 @@ console.log(date.toString()); // Sat Mar 01 2025 ...
 
 # Javascript type checking
 
-## 자바스크립트 타입 및 프로퍼티 확인 방법
-
-### 1. `typeof` 연산자 (원시 타입 및 기본 타입 확인)
+## 1. `typeof` 연산자 (원시 타입 및 기본 타입 확인)
 
 - **역할**: 피연산자의 타입을 **문자열**로 반환합니다.
 - **반환 값 종류**: `"undefined"`, `"boolean"`, `"number"`, `"string"`, `"function"`, `"object"` 등
@@ -232,7 +230,7 @@ typeof null; // => "object" (주의!)
 
 ---
 
-### 2. `instanceof` 연산자 (객체 인스턴스 관계 확인)
+## 2. `instanceof` 연산자 (객체 인스턴스 관계 확인)
 
 - **역할**: 객체가 특정 클래스(생성자)의 인스턴스인지 프로토타입 체인을 통해 확인합니다 (`true`/`false` 반환).
 - **특징**: 객체에만 사용 가능하며, 자식 클래스는 부모 클래스 검사 시에도 `true`를 반환합니다.
@@ -313,7 +311,105 @@ Object.hasOwn(cappuccino, "coolDown"); // => false (메서드/상속된 것이�
 Object.hasOwn(cappuccino, "constructor"); // => false (프로토타입 상속 속성)
 ```
 
+# Javascript Promise
+
+자바스크립트의 **Promise(프로미스)** 개념과 동작 방식을 알기 쉽게 정리해 드립니다.
+
 ---
 
-> **💡 요약 노트**
-> 자바스크립트의 타입 검사는 유연하지만 예기치 않은 오류를 유발할 수 있습니다. 더 엄격하고 안전한 코드를 원하신다면 정적 타입 언어인 **TypeScript** 도입을 권장합니다!
+## 1. Promise의 개념과 3가지 상태 (Lifecycle)
+
+Promise는 비동기 작업의 **최종 완료(성공) 또는 실패와 그 결과 값**을 나타내는 객체입니다. 생성될 때 `pending` 상태로 시작해 최종적으로 한 번만 상태가 결정(settled)됩니다.
+
+- **Pending (대기 중)**: 비동기 작업이 완료되지 않은 초기 상태
+- **Fulfilled (이행됨)**: 작업이 성공적으로 완료된 상태 (`value` 값을 가짐, 변경 불가)
+- **Rejected (거부됨)**: 작업이 실패한 상태 (`reason` 에러/이유를 가짐, 변경 불가)
+
+> 💡 **핵심 규칙:** 한 번 fulfilled나 rejected 상태가 되면 **절대 다른 상태로 변경될 수 없으며**, 결괏값이나 에러 사유도 변경할 수 없습니다.
+
+---
+
+## 2. Promise 해결(Resolve)과 거부(Reject)
+
+- **해결 (Resolve)**: 성공적인 결과 처리
+- `Promise.resolve(value)` 또는 `new Promise((resolve) => resolve(value))`
+- 체이닝 과정에서 값을 반환(return)하면 다음 Promise는 해결(fulfilled)됩니다.
+
+- **거부 (Reject)**: 실패/에러 처리
+- `Promise.reject(reason)` 또는 `new Promise((_, reject) => reject(reason))`
+- 체이닝 과정에서 **에러를 던지면(`throw reason`)** 다음 Promise는 거부(rejected)됩니다.
+
+---
+
+## 3. 체이닝 메서드 (`.then`, `.catch`, `.finally`)
+
+Promise는 후속 처리를 위해 체이닝 메서드를 제공하며, 호출 시 **항상 새로운 Promise를 반환**합니다.
+
+| 메서드                              | 실행 시점                        | 역할 및 특징                                                                                                                                  |
+| ----------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`.then(onResolved, onRejected)`** | 성공 시 또는 실패 시             | 성공 시 콜백(`onResolved`)과 실패 시 콜백(`onRejected`)을 처리합니다. 값을 리턴하면 성공, 에러를 던지면 거부 상태의 새 프로미스가 반환됩니다. |
+| **`.catch(onCatch)`**               | 거부(실패) 시                    | 이전 프로미스에서 발생한 에러를 잡아냅니다. (`.then(null, onRejected)`와 동일)                                                                |
+| **`.finally(onSettled)`**           | 성공/실패 여부와 관계없이 무조건 | 작업이 끝나면 항상 실행됩니다. 값을 반환해도 기존 프로미스의 상태/값을 그대로 전달(무시)하지만, 에러를 던지면 거부 상태로 바꿉니다.           |
+
+---
+
+## 4. 요약 예시 코드 흐름
+
+```javascript
+const finalPromise = myPromise
+  .then((sampled) => {
+    console.log(`성공: ${sampled}`);
+    return "yay"; // 성공 시 다음 프로미스는 'yay'로 resolved
+  })
+  .catch((reason) => {
+    throw new Error(reason); // 실패 시 에러를 던져 거부(rejected) 상태로 만듦
+  })
+  .finally(() => {
+    console.log("Promise completed"); // 성공하든 실패하든 무조건 실행
+  });
+```
+
+## 5. `reject(error)` 대신 `throw error`를 쓰면 안 되는 이유 (비동기 콜백의 함정)
+
+가이드 문서에서 보셨듯, Promise는 에러가 발생했을 때 **거부(Rejected)** 상태로 만들어야 합니다. 하지만 `new Promise` 생성자 안의 비동기 콜백 내부에서는 `throw error`가 예상대로 동작하지 않습니다.
+
+### 🔄 내부 동작 차이
+
+- **`reject(error)` 호출 (정상 동작)**
+- `new Promise`가 제공하는 `reject` 함수는 프로미스의 상태를 명시적으로 **Rejected**로 바꾸고, 거부 이유(`reason`)에 에러를 담아 전달합니다. 이 덕분에 바깥쪽 테스트 러너나 `.catch`가 에러를 올바르게 감지할 수 있습니다.
+
+- **`throw error` 사용 (타임아웃 발생)**
+- 비동기 콜백(`.then()` 내부 등) 안에서 `throw error`를 하면, 그 에러는 `new Promise` 바깥으로 전파되지 않고 콜백 함수 내부에서 길을 잃습니다.
+- 결과적으로 `new Promise` 입장에서는 `resolve`도 `resject`도 호출되지 않은 채 영원히 초기 상태(**Pending**)에 머물게 되며, 테스트는 응답을 기다리다 **Timeout 에러**로 실패하게 됩니다.
+
+---
+
+## 6. `new Promise` 내부에서 `return this.api.fetch`를 안 해도 되는 이유
+
+함수를 작성할 때 내부 동작에 `return`이 없으면 밖에서도 값을 못 받을 것 같지만, Promise의 구조를 이해하면 왜 생략해도 되는지 명확해집니다.
+
+### 🛠️ 역할의 분리: 전체 함수 vs 내부 생성자
+
+1. **함수 전체의 `return` (`free` 메서드 레벨)**
+
+- `free(text)` 함수는 맨 앞에서 `return new Promise(...)`를 통해 **Promise 객체 자체를 바깥으로 반환**합니다. 이 덕분에 함수를 호출하는 쪽(`.resolves.toBe(...)`)에서 결과가 담길 Promise 객체를 받아올 수 있습니다.
+
+2. **내부 생성자 안에서의 `return` 무시**
+
+- `new Promise((resolve, reject) => { ... })` 내부의 콜백 함수는 자바스크립트 엔진이 무엇을 리턴하든 **리턴값을 완전히 무시**합니다. 즉, `return this.api.fetch(...)`라고 써도 바깥으로 전달되는 값은 없습니다.
+
+3. **값 전달의 유일한 통로: `resolve` / `reject**`
+
+- 비동기 작업인 `this.api.fetch(text)`가 끝난 뒤, 값을 전달하는 유일한 방법은 `return`이 아니라 `resolve(translation)`을 호출하는 것입니다.
+- `resolve(translation)`을 실행하는 순간, 프로미스 객체 내부의 상태는 **Fulfilled**가 되고 결괏값(`value`)으로 `translation`이 쏙 저장됩니다.
+
+따라서 내부의 비동기 호출부 앞에는 `return`을 붙일 필요가 없으며, 오직 **`resolve`로 값을 전달**하고 함수 전체는 **`return new Promise`로 감싸주는 것**이 핵심입니다.
+
+## 7. Promise 조합 메서드 비교표
+
+| 메서드                   | 주요 동작 방식                                                    | 하나라도 실패(Reject)할 때                                 | 반환되는 결과 형태                                                                                                    |
+| ------------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **`Promise.all`**        | 모든 프로미스가 **성공(Fulfilled)**할 때까지 기다림               | **즉시 전체 실패(Reject)** (나머지 성공 결과도 무시)       | 성공한 값들의 **배열** `[res1, res2, ...]`                                                                            |
+| **`Promise.allSettled`** | 성공하든 실패하든 **모든 프로미스가 끝날 때(Settled)**까지 기다림 | 실패가 있어도 멈추지 않고 **끝까지 진행**                  | 각 상태와 결과/에러가 담긴 객체들의 **배열** `[{status: 'fulfilled', value: ...}, {status: 'rejected', reason: ...}]` |
+| **`Promise.race`**       | 가장 **먼저 끝나는** 프로미스(성공이든 실패든)의 결과를 채택함    | 가장 먼저 끝난 것이 실패라면 **즉시 실패**                 | 가장 먼저 끝난 **단 하나의 값 또는 에러**                                                                             |
+| **`Promise.any`**        | 가장 **먼저 성공(Fulfilled)**하는 프로미스의 결과를 채택함        | 실패한 것들은 무시하며, **전부가 다 실패해야만** 에러 발생 | 가장 먼저 성공한 **단 하나의 값**                                                                                     |
