@@ -6,14 +6,17 @@ const n = Number(input[0]);
 let arr = [];
 let count = 0;
 function recursive(arr) {
-  if (arr.length > n) {
-    return;
-  }
   if (arr.length === n) {
     count++;
     return;
   }
-  for (let i = 1; i <= Math.min(4, n); i++) {
+  if (arr.length > n) {
+    return;
+  }
+  for (let i = 1; i <= 4; i++) {
+    if (arr.length + i > n) {
+      continue;
+    }
     for (let j = 1; j <= i; j++) {
       arr.push(i);
     }
