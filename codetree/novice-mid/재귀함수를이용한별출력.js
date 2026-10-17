@@ -1,15 +1,14 @@
 const fs = require("fs");
 const input = fs.readFileSync(0).toString().trim().split("\n");
-const n = Number(input[0]);
-
+let n = Number(input[0]);
 // Please Write your code here.
 
-let num = 1;
-function recursive(num) {
-  if (num > n) return;
-  console.log("*".repeat(num));
-  num++;
-  recursive(num);
-}
+const starPrint = (value) => {
+  if (value > n) {
+    return;
+  }
+  console.log("*".repeat(value));
+  starPrint(value + 1);
+};
 
-recursive(num);
+starPrint(1);
